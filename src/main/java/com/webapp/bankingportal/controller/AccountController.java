@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.cache.annotation.Cacheable;
 import com.webapp.bankingportal.dto.AmountRequest;
 import com.webapp.bankingportal.dto.FundTransferRequest;
 import com.webapp.bankingportal.dto.PinRequest;
@@ -38,6 +39,7 @@ public class AccountController {
     }
 
     @PostMapping("/pin/create")
+    @Cacheable(value = "idempotency", key = "T(com.webapp.bankingportal.util.LoggedinUser).getAccountNumber() + ':' + '/api/account/pin/create' + ':' + (#pinRequest).hashCode()")
     public ResponseEntity<String> createPIN(@RequestBody PinRequest pinRequest) {
         accountService.createPin(
                 LoggedinUser.getAccountNumber(),
@@ -48,6 +50,7 @@ public class AccountController {
     }
 
     @PostMapping("/pin/update")
+    @Cacheable(value = "idempotency", key = "T(com.webapp.bankingportal.util.LoggedinUser).getAccountNumber() + ':' + '/api/account/pin/update' + ':' + (#pinUpdateRequest).hashCode()")
     public ResponseEntity<String> updatePIN(@RequestBody PinUpdateRequest pinUpdateRequest) {
         accountService.updatePin(
                 LoggedinUser.getAccountNumber(),
@@ -59,6 +62,7 @@ public class AccountController {
     }
 
     @PostMapping("/deposit")
+    @Cacheable(value = "idempotency", key = "T(com.webapp.bankingportal.util.LoggedinUser).getAccountNumber() + ':' + '/api/account/deposit' + ':' + (#amountRequest).hashCode()")
     public ResponseEntity<String> cashDeposit(@RequestBody AmountRequest amountRequest) {
         accountService.cashDeposit(
                 LoggedinUser.getAccountNumber(),
@@ -69,6 +73,7 @@ public class AccountController {
     }
 
     @PostMapping("/withdraw")
+    @Cacheable(value = "idempotency", key = "T(com.webapp.bankingportal.util.LoggedinUser).getAccountNumber() + ':' + '/api/account/withdraw' + ':' + (#amountRequest).hashCode()")
     public ResponseEntity<String> cashWithdrawal(@RequestBody AmountRequest amountRequest) {
         accountService.cashWithdrawal(
                 LoggedinUser.getAccountNumber(),
@@ -79,6 +84,7 @@ public class AccountController {
     }
 
     @PostMapping("/fund-transfer")
+    @Cacheable(value = "idempotency", key = "T(com.webapp.bankingportal.util.LoggedinUser).getAccountNumber() + ':' + '/api/account/fund-transfer' + ':' + (#fundTransferRequest).hashCode()")
     public ResponseEntity<String> fundTransfer(@RequestBody FundTransferRequest fundTransferRequest) {
         accountService.fundTransfer(
                 LoggedinUser.getAccountNumber(),
